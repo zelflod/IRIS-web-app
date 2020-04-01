@@ -4,11 +4,12 @@
         "Dockerfile*": "dockerfile",
       },
     "objectscript.conn" :{
+      "host": "192.168.99.100",
       "ns": "IRISAPP",
       "active": true,
 	  "links": {
 		"CurrentPage in IRISAPP": "http://${host}:${port}/csp/${namespace}/${classname}"
-      }
+      },
       "docker-compose": {
         "service": "iris",
         "internalPort": 52773

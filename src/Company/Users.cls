@@ -1,45 +1,12 @@
+/// all users
 Class Company.Users Extends %Persistent
 {
 
-/// Person first name
-Property Name As %String(MAXLEN = 100, TRUNCATE = 1);
+Property name As %String;
 
-/// Person date of birth in HOROLOG
-Property dob As %Integer;
+Property age As %Numeric;
 
-/// Users count
-ClassMethod Count() As %Status
-{
-    &sql(select COUNT(*) into :count from Company.Users)
-    Return count
-}
-
-/// Create new user<br>
-/// <var>Name</var> - user first name<br>
-/// <var>DOB</var> - user date of birth YYYY-MM-DD<br>
-ClassMethod AddUser(Name As %String = "", DOB As %String = "") As %Status
-{
-    set user = ..%New()
-    set user.Name = Name
-    set user.dob = +$ZDateTimeH(DOB, 3)
-    Return user.%Save()
-}
-
-/// get all users array
-ClassMethod GetData() As %Status
-{
-  set users = []
-  set rs = ##class(%SQL.Statement).%ExecDirect(,"SELECT * FROM Company.Users")
-  while rs.%Next() {
-    set userObj = {
-      "name": (rs.Name), 
-      "dob": (rs.dob)
-    }
-    
-    do users.%Push(userObj)
-  }
-  return users
-}
+Property sex As %Numeric;
 
 Storage Default
 {
@@ -48,10 +15,16 @@ Storage Default
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>Name</Value>
+<Value>name</Value>
 </Value>
 <Value name="3">
-<Value>dob</Value>
+<Value>age</Value>
+</Value>
+<Value name="4">
+<Value>sex</Value>
+</Value>
+<Value name="5">
+<Value>Height</Value>
 </Value>
 </Data>
 <DataLocation>^Company.UsersD</DataLocation>
@@ -61,5 +34,39 @@ Storage Default
 <StreamLocation>^Company.UsersS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
+
+Method createUser(name As %String, age As %Numeric, sex As %Numeric) As %Boolean
+{
+	set ##this.name = name
+	set ##this.age = age
+	set ##this.sex = sex
+	set result = ##this.%Save()
+	quit result
+}
+
+Method getUsers(data) As %String
+{
+	set data = []
+	&sql(
+	 	DECLARE MyCursor CURSOR FOR
+	    SELECT id, name, age, sex
+	    INTO :id, :name, :age, :sex
+	    FROM Company.Users
+ 	)
+ 	//вариант в массив INTO :singleUserData()
+ 	&sql(OPEN MyCursor)
+ 	
+    FOR { 
+   		&sql(FETCH MyCursor)
+        if (SQLCODE) quit
+        
+        set data(id) = $ListBuild(id, name, age, sex)
+ 	}
+ 	&sql(CLOSE MyCursor)
+ 	
+ 	quit
+}
+
+// Property Height As %String [ Required ];
 
 }
