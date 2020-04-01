@@ -16,8 +16,7 @@ COPY  Installer.cls .
 COPY  src src
 COPY irissession.sh /
 COPY webix_samples /usr/irissys/csp/user/samples
-COPY webix_codebase /usr/irissys/csp/user/codebase
-COPY webix_codebase /usr/irissys/csp/irisapp/webix
+COPY irisapp/webix /usr/irissys/csp/user/codebase
 SHELL ["/irissession.sh"]
 
 RUN \
