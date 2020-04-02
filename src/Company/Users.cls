@@ -56,17 +56,32 @@ Method getUsers(data) As %String
  	//вариант в массив INTO :singleUserData()
  	&sql(OPEN MyCursor)
  	
-    FOR { 
-   		&sql(FETCH MyCursor)
-        if (SQLCODE) quit
-        
-        set data(id) = $ListBuild(id, name, age, sex)
+  FOR { 
+    &sql(FETCH MyCursor)
+    if (SQLCODE) quit
+
+    set obj = {"id": (id), "name": (name), "age": (age), "sex": (sex)}
+    do data.%Push(obj)
  	}
  	&sql(CLOSE MyCursor)
  	
  	quit
 }
 
-// Property Height As %String [ Required ];
+ClassMethod SaveUser(requestUserObj) As %Status
+{
+  set result = {}
+  set obj = ##class(Company.Users).%New()
+  set obj.name = requestUserObj.fname
+  set obj.age = requestUserObj.fage
+  set saveResult = obj.%Save()
+
+  if $$$ISOK(saveResult) set result = {"result": true}
+  else  set result = {"result": false}
+  set ErrorMessage = ##class(%SYSTEM.Status).GetErrorText(saveResult)
+  set result.message = ErrorMessage
+
+  return result
+}
 
 }

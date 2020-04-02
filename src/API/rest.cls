@@ -8,8 +8,26 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
   <Route Url="/test" Method="GET" Call="test"/>
-  <Route Url="/users" Method="GET" Call="Users"/>
+  <Route Url="/users/get" Method="GET" Call="Users"/>
+  <Route Url="/users/save" Method="POST" Call="SaveUser"/>
 </Routes>
+}
+
+ClassMethod SaveUser() As %Status
+{
+  Try {
+    set requestUserObj = {}
+    set requestUserObj.fname = %request.Get("fname")
+    set requestUserObj.fage = %request.Get("fage")
+    set result = ##class(Company.Users).SaveUser(requestUserObj)
+    write result.%ToJSON()
+  }
+  Catch exception {
+    set result = {"result": false}
+    set result.message = $ZCVT(exception.Name_" "_exception.Location, "O", "HTML")
+    write result.%ToJSON()
+  }
+  Quit $$$OK
 }
 
 ClassMethod test() As %Status

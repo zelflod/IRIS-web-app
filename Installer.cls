@@ -29,4 +29,32 @@ ClassMethod setup(ByRef pVars, pLogLevel As %Integer = 3, pInstaller As %Install
   Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "setup")
 }
 
+ClassMethod RestWebApp() As %Status
+{
+  set namespace = $NAMESPACE
+  zn "%SYS"
+  write "Create web application ..."
+  set webName = "/api"
+  set webProperties("DispatchClass") = "Api.Rest"
+  set webProperties("NameSpace") = "IRISAPP"
+  set webProperties("Enabled") = 1
+  set webProperties("AutheEnabled") = 64
+  set webProperties("MatchRoles")=":%DB_IRISAPP"
+  set sc = ##class(Security.Applications).Create(webName, .webProperties)
+  write:'sc sc
+  write:sc "Web application "_webName_" has been created!"
+  zn namespace
+}
+
+ClassMethod ModifyIrisapp() As %Status
+{
+  set namespace = $NAMESPACE
+  zn "%SYS"
+  set webProperties("MatchRoles")=":%DB_IRISAPP"
+  set sc = ##class(Security.Applications).Modify("/csp/irisapp", .webProperties)
+  write:'sc sc
+  write:sc "Web application "_webName_" has been created!"
+  zn namespace
+}
+
 }

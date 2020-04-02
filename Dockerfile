@@ -23,17 +23,8 @@ SHELL ["/irissession.sh"]
 RUN \
   do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
   set sc = ##class(App.Installer).setup() \
-  zn "%SYS" \
-  write "Create web application ..." \
-  set webName = "/api" \
-  set webProperties("DispatchClass") = "Api.Rest" \
-  set webProperties("NameSpace") = "IRISAPP" \
-  set webProperties("Enabled") = 1 \
-  set webProperties("AutheEnabled") = 64 \
-  set webProperties("MatchRoles")=":%DB_IRISAPP" \
-  set sc = ##class(Security.Applications).Create(webName, .webProperties) \
-  write sc \
-  write:sc "Web application "_webName_" has been created!"
+  do ##class(App.Installer).RestWebApp() \
+  do ##class(App.Installer).ModifyIrisapp()
 
 # bringing the standard shell back
 SHELL ["/bin/bash", "-c"]

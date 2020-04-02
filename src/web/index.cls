@@ -4,7 +4,7 @@ Class web.index Extends %CSP.Page
 ClassMethod OnPage() As %Status
 {
   do ..header()
-  do ..body()
+  do ##class(web.index).body()
   do ..footer()
     Quit $$$OK
 }
@@ -27,15 +27,36 @@ ClassMethod body() As %Status
 {
   &JS<
 <script type="text/javascript">
-  var menu_data = [
-	{id: "tab1", icon: "mdi mdi-table", value:"Users list"},
-	{id: "tab2", icon: "mdi mdi-pencil", value:"Forms"},
-	{id: "tab3", icon: "mdi mdi-book", value:"Documentation"}
-];
-var grid_data = [{"id":1,"title":"The Shawshank Redemption","year":1994,"votes":678790,"rating":9.2,"rank":1},{"id":2,"title":"The Godfather","year":1972,"votes":511495,"rating":9.2,"rank":2},{"id":3,"title":"The Godfather: Part II","year":1974,"votes":319352,"rating":9,"rank":3},{"id":4,"title":"The Good, the Bad and the Ugly","year":1966,"votes":213030,"rating":8.9,"rank":4},{"id":5,"title":"My Fair Lady","year":1964,"votes":533848,"rating":8.9,"rank":5},{"id":6,"title":"12 Angry Men","year":1957,"votes":164558,"rating":8.9,"rank":6}];
-var grid_data1 = new Array(...grid_data).splice(0, 3);
-var grid_data2 = new Array(...grid_data).splice(3, 3);
+  var submitUser = (rawData) => {
+    let data = JSON.parse(rawData);
+    let message;
+    if (data.result) {
+      message = { type:"success", text: "User is saved", expire:-1};
+      $$('tab2_content').clear();
+    }
+    else
+      message = { type:"error", text: data.message, expire:-1};
+    webix.message(message);
+  }
 
+var menu_data = [
+	{id: "tab1", icon: "mdi mdi-table", value:"Users list"},
+	{id: "tab2", icon: "mdi mdi-pencil", value:"User form"},
+	//{id: "tab3", icon: "mdi mdi-book", value:"Documentation"}
+];
+
+var user_list_template = {
+  id:"tab1_content",
+  view:"list",
+  template:"<div style='padding-left:18px'> Name:#name#, age:#age# </div>",
+  type:{
+    height:60
+  },
+  select:true,
+  url:"/api/users/get"
+  };
+
+// Single user form template
 var user_form_template = {
   id:"tab2_content",
   view:"form",
@@ -43,68 +64,53 @@ var user_form_template = {
   elements:[
     {view: "text", name: "fname", label: "Name"},
     {view: "text", name: "fage", label: "Age"},
-    { view:"button",  name:"submit", value:"Submit", id:"btn"}
-  ]
-};
+    { view:"button",  value:"Submit", id:"btn", click:function(){
+      var values = this.getFormView().getValues();
+      webix.ajax().post("/api/users/save", values, submitUser);
+    }}
+  ]};
+
 var ui_template = {
-			rows: [
-				{ view: "toolbar", padding:3, 
-          elements: [
-            { view: "button", type: "icon", icon: "mdi mdi-menu",
-              width: 37, align: "left", css: "app_button", click: function(){
-                $$("$sidebar1").toggle();
-              }
-            },
-            { view: "label", label: "IRIS example web application"},
-          ]
-				},
-				{ 
-          cols:[
-					{
-						view: "sidebar",
-						data: menu_data,
-						on:{
-							onAfterSelect: function(id){
-                let value = this.getItem(id).value;
-								//webix.message(`Selected ${value}`);
-                //$$("t1_content").setHTML(`Selected ${value}`);
-                $$(`${id}_content`).show();
-							}
-						}
-					},
-					{ id:"t1_content",
-              cells:[
-                {
-                  id:"tab1_content",
-                  view:"list",
-                  template:"#rank#. #title# <div style='padding-left:18px'> Year:#year#, votes:#votes# </div>",
-                  type:{
-                    height:60
-                  },
-                  select:true,
-                  data:grid_data
-                },
-                user_form_template,
-                {
-                  id:"tab3_content",
-                  view:"list",
-                  template:"#rank#. #title# <div style='padding-left:18px'> Year:#year#, votes:#votes# </div>",
-                  type:{
-                    height:60
-                  },
-                  select:true,
-                  data:grid_data2
-                }
-            ]   
+  height: '100%',
+  rows: [
+    { view: "toolbar", padding:3, 
+      elements: [
+        { view: "button", type: "icon", icon: "mdi mdi-menu",
+          width: 37, align: "left", css: "app_button", click: function(){
+            $$("$sidebar1").toggle();
           }
-				]}
-			]
-		};
+        },
+        { view: "label", label: "IRIS example web application for test purpose"},
+      ]
+    },
+    { 
+      cols:[
+      {
+        view: "sidebar",
+        data: menu_data,
+        on:{
+          onAfterSelect: function(id){
+            //let value = this.getItem(id).value;
+            //webix.message(`Selected ${value}`);
+            //$$("t1_content").setHTML(`Selected ${value}`);
+            //let displayViewId = `${id}_content`;
+            $$(`${id}_content`).show();
+            //if (displayViewId === 'tab1_content') $$(displayViewId).refresh();
+          }
+        }
+      },
+      { id:"t1_content",
+          cells:[
+            user_list_template,
+            user_form_template
+        ]   
+      }
+    ]}
+  ]};
 
-	webix.ready(function(){
-		webix.ui(ui_template);
-	});
-
+webix.ready(function(){
+  webix.ui(ui_template);
+});
 </script>
   >
   Quit $$$OK
