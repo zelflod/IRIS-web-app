@@ -50,10 +50,11 @@ ClassMethod ModifyIrisapp() As %Status
 {
   set namespace = $NAMESPACE
   zn "%SYS"
+  set webName = "/csp/irisapp"
   set webProperties("MatchRoles")=":%DB_IRISAPP"
-  set sc = ##class(Security.Applications).Modify("/csp/irisapp", .webProperties)
+  set sc = ##class(Security.Applications).Modify(webName, .webProperties)
   write:'sc sc
-  write:sc "Web application "_webName_" has been created!"
+  write:sc "Web application "_webName_" has been modified!"
   zn namespace
 }
 
