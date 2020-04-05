@@ -6,7 +6,7 @@ ARG IMAGE=intersystemsdc/iris-community:2019.4.0.383.0-zpm
 FROM $IMAGE
 
 USER root
-
+COPY irisapp/webix /usr/irissys/csp/irisapp/webix
 WORKDIR /opt/irisapp
 RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /opt/irisapp
 
@@ -17,7 +17,7 @@ COPY  src src
 COPY irissession.sh /
 COPY webix_samples /usr/irissys/csp/user/samples
 COPY irisapp/webix /usr/irissys/csp/user/codebase
-COPY irisapp/webix /usr/irissys/csp/irisapp/webix
+
 SHELL ["/irissession.sh"]
 
 RUN \

@@ -4,7 +4,6 @@
         "Dockerfile*": "dockerfile",
       },
     "objectscript.conn" :{
-      "host": "192.168.99.100",
       "ns": "IRISAPP",
       "active": true,
 	  "links": {
