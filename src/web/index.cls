@@ -23,6 +23,7 @@ ClassMethod header() As %Status
   Quit $$$OK
 }
 
+/// mostly JS on webix framework
 ClassMethod body() As %Status
 {
   &JS<

@@ -4,9 +4,9 @@ Class Company.Users Extends %Persistent
 
 Property name As %String;
 
-Property age As %Numeric;
+Property age As %Decimal;
 
-Property sex As %Numeric;
+Property sex As %Decimal;
 
 Storage Default
 {
@@ -82,6 +82,35 @@ ClassMethod SaveUser(requestUserObj) As %Status
   set result.message = ErrorMessage
 
   return result
+}
+
+ClassMethod sampleDynamicRequest(paramAge)
+{
+	set sqlRaw = "select * from {%1%} where age>?"
+	set table = "Company.Users"
+	set sql = $Replace(sqlRaw, "{%1%}", table)
+
+	set sqlObj = ##class(%SQL.Statement).%New()
+	set qStatus = sqlObj.%Prepare(sql)
+	set rset = sqlObj.%Execute(paramAge)
+	do rset.%Display()
+}
+
+ClassMethod sampleStaticRequest()
+{
+	set searchAge = 18
+	&sql(DECLARE C1 CURSOR FOR 
+       SELECT id,name,age,sex 
+	   INTO :idVar, :nameVar,:ageVar,:sexVar 
+       FROM Company.Users
+       WHERE age > :searchAge)
+  &sql(OPEN C1)
+      QUIT:(SQLCODE'=0)
+  &sql(FETCH C1)
+  WHILE (SQLCODE = 0) {
+     WRITE nameVar," is ",ageVar," years",!
+    &sql(FETCH C1) }
+  &sql(CLOSE C1)
 }
 
 }

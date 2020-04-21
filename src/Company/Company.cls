@@ -6,6 +6,8 @@ Property name As %String;
 
 Property inn As %Integer;
 
+Index inn On inn [ Data = name ];
+
 Storage Default
 {
 <Data name="CompanyDefaultData">

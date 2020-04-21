@@ -1,7 +1,11 @@
 Class FCE.Person Extends %Persistent
 {
 
-Property Name As %String;
+Property Address As User.Address;
+
+Property Document As User.Document;
+
+Property Name As %String [ InitialExpression = "a" ];
 
 Storage Default
 {
@@ -11,6 +15,12 @@ Storage Default
 </Value>
 <Value name="2">
 <Value>Name</Value>
+</Value>
+<Value name="3">
+<Value>Address</Value>
+</Value>
+<Value name="4">
+<Value>Document</Value>
 </Value>
 </Data>
 <DataLocation>^FCE.PersonD</DataLocation>
