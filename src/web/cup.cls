@@ -1,10 +1,10 @@
-Class web.index Extends %CSP.Page
+Class web.cup Extends %CSP.Page
 {
 
 ClassMethod OnPage() As %Status
 {
   do ..header()
-  do ##class(web.index).body()
+  do ##class(web.cup).body()
   do ..footer()
     Quit $$$OK
 }
@@ -41,11 +41,11 @@ ClassMethod body() As %Status
   }
 
 var menu_data = [
-	{id: "tab1", icon: "mdi mdi-table", value:"Dancers list"},
-	{id: "tab2", icon: "mdi mdi-pencil", value:"Dancer form"},
-  {id: "tab3", icon: "mdi mdi-pencil", value:"Dancers"},
-  {id: "tab4", icon: "mdi mdi-pencil", value:"Cups"},
-	//{id: "tab3", icon: "mdi mdi-book", value:"Judges"}
+    {id: "tab1", icon: "mdi mdi-table", value:"Cups list"},
+    {id: "tab2", icon: "mdi mdi-pencil", value:"Create a cup"},
+  {id: "tab3", icon: "mdi mdi-pencil", value:"Add dancer to cup"},
+  {id: "tab4", icon: "mdi mdi-pencil", value:"Add judge to cup"},
+  {id: "tab5", icon: "mdi mdi-pencil", value:"Add score for dancer"},
 ];
 
 var dancer_list_template = {
@@ -74,12 +74,29 @@ var dancer_form_template = {
     }}
   ]};
 
+var top_menu_data = [
+    { id:"1",value:"Dancers", href: '/csp/irisapp/web.dancer.cls'},
+    { id:"2",value:"Judges", href: '/csp/irisapp/web.judge.cls'},
+    { id:"3",value:"Cups", href: '/csp/irisapp/web.cup.cls'}
+];
+var top_menu = {
+    view:"menu",
+    data: top_menu_data,
+    type:{
+        subsign:true
+    }
+};
+var top_toolbar = {
+    view:"toolbar", elements:[
+        top_menu
+    ]
+};
+
 var ui_template = {
   height: '100%',
   rows: [
-    { 
-      view: "toolbar", 
-      padding:3, 
+  top_toolbar,
+    { view: "toolbar", padding:3, 
       elements: [
         { view: "button", type: "icon", icon: "mdi mdi-menu",
           width: 37, align: "left", css: "app_button", click: function(){
@@ -114,37 +131,11 @@ var ui_template = {
     ]}
   ]};
 
-//webix.ready(function(){
-//  webix.ui(ui_template);
-//});
-
-var menu_data = [
-		{ id:"1",value:"Dancers", href: '/csp/irisapp/web.dancer.cls'},
-		{ id:"2",value:"Judges", href: '/csp/irisapp/web.judge.cls'},
-		{ id:"3",value:"Cups", href: '/csp/irisapp/web.cup.cls'}
-	];
-	var menu = {
-		view:"menu",
-		data: menu_data,
-		type:{
-			subsign:true
-		}
-	};
-	var toolbar = {
-		view:"toolbar", elements:[
-		    menu
-		]
-	};
+webix.ready(function(){
+  webix.ui(ui_template);
+});
 
 
-  webix.ready(function(){
-	webix.ui({
-		rows:[
-			toolbar,
-			{ template:"Some content" }
-		]
-	});
-  });
 
 
 </script>
