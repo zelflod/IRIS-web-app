@@ -28,51 +28,144 @@ ClassMethod body() As %Status
 {
   &JS<
 <script type="text/javascript">
-  var submitDancer = (rawData) => {
+  var submitCup = (rawData) => {
     let data = JSON.parse(rawData);
     let message;
     if (data.result) {
-      message = { type:"success", text: "Dancer is saved", expire:-1};
+      message = { type:"success", text: "Cup is saved", expire:-1};
       $$('tab2_content').clear();
     }
     else
       message = { type:"error", text: data.message, expire:-1};
-    webix.message(message);
+      webix.message(message);
   }
 
 var menu_data = [
     {id: "tab1", icon: "mdi mdi-table", value:"Cups list"},
     {id: "tab2", icon: "mdi mdi-pencil", value:"Create a cup"},
-  {id: "tab3", icon: "mdi mdi-pencil", value:"Add dancer to cup"},
-  {id: "tab4", icon: "mdi mdi-pencil", value:"Add judge to cup"},
-  {id: "tab5", icon: "mdi mdi-pencil", value:"Add score for dancer"},
+    {id: "tab3", icon: "mdi mdi-pencil", value:"Add dancer to cup"},
+    {id: "tab4", icon: "mdi mdi-pencil", value:"Add judge to cup"},
+    {id: "tab5", icon: "mdi mdi-pencil", value:"Add score for dancer"},
+    {id: "tab6", icon: "mdi mdi-table", value:"Results"},
 ];
 
-var dancer_list_template = {
+var cup_list_template = {
   id:"tab1_content",
   view:"list",
-  template:"<div style='padding-left:18px'> Name:#name#, Birthday:#birthday#, Level:#level# </div>",
+  template:"<div style='padding-left:18px'> Name:#name#, Level:#lvl# </div>",
   type:{
     height:60
   },
   select:true,
-  url:"/api_cup/dancers/list"
+  url:"/api_cup/cup/list"
   };
 
-// Single dancer form template
-var dancer_form_template = {
+var cup_form_template = {
   id:"tab2_content",
   view:"form",
   width: "400",
+  height: "600",
   elements:[
     {view: "text", name: "name", label: "Name"},
-    {view: "text", name: "birthday", label: "Birthday"},
-    {view: "text", name: "level", label: "Level"},
+    {view: "text", name: "lvl", label: "Level"},
     { view:"button",  value:"Submit", id:"btn", click:function(){
       var values = this.getFormView().getValues();
-      webix.ajax().post("/api_cup/dancers/create", values, submitDancer);
+      webix.ajax().post("/api_cup/cup/create", values, submitCup);
     }}
   ]};
+
+var addDancerToCupCallback = (rawData) => {
+    let data = JSON.parse(rawData);
+    let message;
+    if (data.result) {
+      message = { type:"success", text: "Dancer is added", expire:-1};
+      $$('tab3_content').clear();
+    }
+    else
+      message = { type:"error", text: data.message, expire:-1};
+      webix.message(message);
+  };
+
+var addDancerToCupTemplate = {
+  id:"tab3_content",
+  view:"form",
+  width: "400",
+  height: "600",
+  elements:[
+    {view:"select", name: "dancer", label:"Dancer", value:1, options:"/api_cup/dancers/list", labelAlign:"right" 
+    },
+    {view:"select", name: "cup", label:"Cup", value:1, options:"/api_cup/cup/list", labelAlign:"right" },
+    { view:"button",  value:"Submit", id:"btn2", click:function(){
+      var values = this.getFormView().getValues();
+      webix.ajax().post("/api_cup/cup/addDancer", values, addDancerToCupCallback);
+    }}
+  ]
+};
+
+var addJudgeToCupCallback = (rawData) => {
+  let data = JSON.parse(rawData);
+  let message;
+  if (data.result) {
+    message = { type:"success", text: "Dancer is added", expire:-1};
+    $$('tab4_content').clear();
+  }
+  else
+    message = { type:"error", text: data.message, expire:-1};
+    webix.message(message);
+};
+
+var addJudgeToCupTemplate = {
+  id:"tab4_content",
+  view:"form",
+  width: "400",
+  height: "600",
+  elements:[
+    {view:"select", name: "judge", label:"Judge", value:1, options:"/api_cup/judge/list", labelAlign:"right" 
+    },
+    {view:"select", name: "cup", label:"Cup", value:1, options:"/api_cup/cup/list", labelAlign:"right" },
+    { view:"button",  value:"Submit", id:"btn3", click:function(){
+      var values = this.getFormView().getValues();
+      webix.ajax().post("/api_cup/cup/addJudge", values, addJudgeToCupCallback);
+    }}
+  ]
+};
+
+var addScoreCallback = (rawData) => {
+  let data = JSON.parse(rawData);
+  let message;
+  if (data.result) {
+    message = { type:"success", text: "Score is added", expire:-1};
+    $$('tab5_content').clear();
+  }
+  else
+    message = { type:"error", text: data.message, expire:-1};
+    webix.message(message);
+};
+
+var addScoreTemplate = {
+  id:"tab5_content",
+  view:"form",
+  width: "400",
+  height: "600",
+  elements:[
+    {view:"select", name: "cup", label:"Cup", value:1, options:"/api_cup/cup/list", labelAlign:"right" },
+    {view:"select", name: "judge", label:"Judge", value:1, options:"/api_cup/judge/list", labelAlign:"right" },
+    {view:"select", name: "dancer", label:"Dancer", value:1, options:"/api_cup/dancers/list", labelAlign:"right" },
+    {view: "text", type: "number", name: "score", label: "Score"},
+    { view:"button",  value:"Submit", id:"btn4", click:function(){
+      var values = this.getFormView().getValues();
+      webix.ajax().post("/api_cup/cup/addScore", values, addScoreCallback);
+    }}
+  ]
+};
+
+var resultsTemplate = {
+  id:"tab6_content",
+  view: "datatable",
+  width: "500",
+  autoConfig:true,
+    url:"/api_cup/cup/results"
+};
 
 var top_menu_data = [
     { id:"1",value:"Dancers", href: '/csp/irisapp/web.dancer.cls'},
@@ -124,8 +217,12 @@ var ui_template = {
       },
       { id:"t1_content",
           cells:[
-            dancer_list_template,
-            dancer_form_template
+            cup_list_template,
+            cup_form_template,
+            addDancerToCupTemplate,
+            addJudgeToCupTemplate,
+            addScoreTemplate,
+            resultsTemplate,
         ]   
       }
     ]}

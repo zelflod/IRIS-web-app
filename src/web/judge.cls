@@ -28,11 +28,11 @@ ClassMethod body() As %Status
 {
   &JS<
 <script type="text/javascript">
-  var submitDancer = (rawData) => {
+  var submitCallback = (rawData) => {
     let data = JSON.parse(rawData);
     let message;
     if (data.result) {
-      message = { type:"success", text: "Dancer is saved", expire:-1};
+      message = { type:"success", text: "Judge is saved", expire:-1};
       $$('tab2_content').clear();
     }
     else
@@ -46,29 +46,27 @@ var menu_data = [
   
 ];
 
-var dancer_list_template = {
+var judge_list_template = {
   id:"tab1_content",
   view:"list",
-  template:"<div style='padding-left:18px'> Name:#name#, Birthday:#birthday#, Level:#level# </div>",
+  template:"<div style='padding-left:18px'> Name:#name#,  Status:#status# </div>",
   type:{
     height:60
   },
   select:true,
-  url:"/api_cup/dancers/list"
+  url:"/api_cup/judge/list"
   };
 
-// Single dancer form template
-var dancer_form_template = {
+var judge_form_template = {
   id:"tab2_content",
   view:"form",
   width: "400",
   elements:[
     {view: "text", name: "name", label: "Name"},
-    {view: "text", name: "birthday", label: "Birthday"},
-    {view: "text", name: "level", label: "Level"},
+    {view: "text", name: "status", label: "Status"},
     { view:"button",  value:"Submit", id:"btn", click:function(){
       var values = this.getFormView().getValues();
-      webix.ajax().post("/api_cup/dancers/create", values, submitDancer);
+      webix.ajax().post("/api_cup/judge/create", values, submitCallback);
     }}
   ]};
 
@@ -122,8 +120,8 @@ var ui_template = {
       },
       { id:"t1_content",
           cells:[
-            dancer_list_template,
-            dancer_form_template
+            judge_list_template,
+            judge_form_template
         ]   
       }
     ]}

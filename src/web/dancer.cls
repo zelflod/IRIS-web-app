@@ -45,15 +45,28 @@ var menu_data = [
 	{id: "tab2", icon: "mdi mdi-pencil", value:"Create dancer"},
 ];
 
+var onDelete = () => {
+  alert("delete")
+};
+
 var dancer_list_template = {
   id:"tab1_content",
   view:"list",
-  template:"<div style='padding-left:18px'> Name:#name#, Birthday:#birthday#, Level:#level# </div>",
+  template:"<div style='padding-left:18px'> Name:#name#, Birthday:#birthday#, Level:#level#  </div> <button class='webix_remove_upload' click='onDelete()'>Delete</button>",
   type:{
     height:60
   },
-  select:true,
-  url:"/api_cup/dancers/list"
+  select:true,  
+  //autoConfig:true,
+  url:"/api_cup/dancers/list",
+  onClick:{
+        "webix_remove_upload":function(ev, id){
+            webix.ajax().del("/api_cup/dancers/delete?id="+id, { id : id }).then((data) => {
+              this.remove(id);
+            });
+            return false; // blocks the default click behavior
+        }
+    }
   };
 
 // Single dancer form template

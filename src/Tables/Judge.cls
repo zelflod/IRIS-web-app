@@ -26,4 +26,41 @@ Storage Default
 <Type>%Storage.Persistent</Type>
 }
 
+ClassMethod SaveJudge(newObj As Tables.Judge) As %Status
+{
+    set obj = ##class(Tables.Judge).%New()
+
+    set obj.name = newObj.name
+    set x = obj.nameIsValid(obj.name)
+
+    set obj.status = newObj.status
+    set x = obj.statusIsValid(obj.status)
+
+    set result = obj.%Save()
+    Return result
+}
+
+Method getAll(data) As %String
+{
+	set data = []
+	&sql(
+	 	DECLARE MyCursor CURSOR FOR
+	    SELECT ID, name, status
+	    INTO :ID, :name, :status
+	    FROM Tables.Judge
+ 	)
+ 	&sql(OPEN MyCursor)
+ 	
+  FOR { 
+    &sql(FETCH MyCursor)
+    if (SQLCODE) quit
+
+    set obj = {"id": (ID), "name": (name), "status": (status), "value": (name)}
+    do data.%Push(obj)
+ 	}
+ 	&sql(CLOSE MyCursor)
+ 	
+ 	quit
+}
+
 }

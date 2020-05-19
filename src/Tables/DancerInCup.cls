@@ -26,4 +26,15 @@ Storage Default
 <Type>%Storage.Persistent</Type>
 }
 
+ClassMethod Save(dancerId As %Integer, cupId As %Integer) As %Status
+{
+    set obj = ##class(Tables.DancerInCup).%New()
+    
+    do obj.dancerSetObjectId(dancerId)
+    do obj.cupSetObjectId(cupId)
+
+    set result = obj.%Save()
+    Return result
+}
+
 }

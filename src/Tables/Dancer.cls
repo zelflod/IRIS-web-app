@@ -39,10 +39,10 @@ ClassMethod SaveDancer(dancerObj As Tables.Dancer) As %Status
     set x = obj.nameIsValid(obj.name)
 
     set obj.birthday = dancerObj.birthday
-    set x = obj.nameIsValid(obj.birthday)
+    set x = obj.birthdayIsValid(obj.birthday)
 
     set obj.level = dancerObj.level
-    set x = obj.nameIsValid(obj.level)
+    set x = obj.levelIsValid(obj.level)
 
     set result = obj.%Save()
     Return result
@@ -65,7 +65,7 @@ ClassMethod GetDancerList() As %String
     set data = []
     &sql(
         DECLARE MyCursor CURSOR FOR
-        SELECT ID, birthday, level, name
+        SELECT ID, birthday, "level", name
         INTO :ID, :Birthday, :Level, :Name,
         FROM Tables.Dancer
     )
@@ -88,8 +88,8 @@ Method getDancers(data) As %String
 	set data = []
 	&sql(
 	 	DECLARE MyCursor CURSOR FOR
-	    SELECT id, name, level
-	    INTO :id, :name, :level
+	    SELECT ID, birthday, "level", name
+	    INTO :id, :birthday, :level, :name
 	    FROM Tables.Dancer
  	)
  	&sql(OPEN MyCursor)
@@ -98,7 +98,7 @@ Method getDancers(data) As %String
     &sql(FETCH MyCursor)
     if (SQLCODE) quit
 
-    set obj = {"id": (id), "name": (name), "level": (level)}
+    set obj = {"id": (id), "name": (name), "level": (level),  "value": (name), "birthday": (birthday) }
     do data.%Push(obj)
  	}
  	&sql(CLOSE MyCursor)

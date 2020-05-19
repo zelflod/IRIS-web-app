@@ -26,4 +26,15 @@ Storage Default
 <Type>%Storage.Persistent</Type>
 }
 
+ClassMethod Save(judgeId As %Integer, cupId As %Integer) As %Status
+{
+    set obj = ##class(Tables.JudgeInCup).%New()
+    
+    do obj.judgeSetObjectId(judgeId)
+    do obj.cupSetObjectId(cupId)
+
+    set result = obj.%Save()
+    Return result
+}
+
 }
