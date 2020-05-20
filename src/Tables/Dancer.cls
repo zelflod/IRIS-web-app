@@ -45,7 +45,7 @@ ClassMethod SaveDancer(dancerObj As Tables.Dancer) As %Status
     set x = obj.levelIsValid(obj.level)
 
     set result = obj.%Save()
-    Return result
+    return result
 }
 
 ClassMethod DeleteDancer(ID As %Integer) As %Status

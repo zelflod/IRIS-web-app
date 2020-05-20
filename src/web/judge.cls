@@ -32,11 +32,11 @@ ClassMethod body() As %Status
     let data = JSON.parse(rawData);
     let message;
     if (data.result) {
-      message = { type:"success", text: "Judge is saved", expire:-1};
+      message = { type:"success", text: "Judge is saved", expire: 2000};
       $$('tab2_content').clear();
     }
     else
-      message = { type:"error", text: data.message, expire:-1};
+      message = { type:"error", text: data.message, expire:2000};
     webix.message(message);
   }
 
@@ -99,7 +99,7 @@ var ui_template = {
             $$("$sidebar1").toggle();
           }
         },
-        { view: "label", label: "IRIS example web application for test purpose"},
+        { view: "label", label: "IRIS App"},
       ]
     },
     { 

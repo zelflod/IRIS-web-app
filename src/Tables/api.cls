@@ -34,49 +34,57 @@ ClassMethod DancerSave() As %Status
     set obj.name = %request.Get("name")
     set obj.birthday = %request.Get("birthday")
     set obj.level = %request.Get("level")
-    set result = ##class(Tables.Dancer).SaveDancer(obj)
-    if $$$ISERR(result) {
-        write result
+    set saveResult = ##class(Tables.Dancer).SaveDancer(obj)
+    set result = {}
+    if $$$ISERR(saveResult) {
+        set result = {"result": false}
     }
     else {
-        write "ok"
+        set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    set ErrorMessage = ##class(%SYSTEM.Status).GetErrorText(saveResult)
+    set result.message = ErrorMessage
+
+    Return $$$OK
 }
 
 ClassMethod DancerGetAll() As %Status
 {
-    #; try {
-    #;     set list = ##class(Tables.Dancer).GetDancerList()
-    #;     write list.%ToJSON()
-    #;     Return $$$OK
-    #; } catch {
-    #;     Return $$$ERROR(500)
-    #; }
-    set obj = ##class(Tables.Dancer).%New()
-    do obj.getDancers(.dancersArray)
-    write dancersArray.%ToJSON()
-    Return $$$OK
+    Try {
+        set obj = ##class(Tables.Dancer).%New()
+        do obj.getDancers(.dancersArray)
+        write dancersArray.%ToJSON()
+        Return $$$OK
+    } Catch {
+        set result = {"result": false}
+        set result.message = $ZCVT(exception.Name_" "_exception.Location, "O", "HTML")
+        write result.%ToJSON()
+        Return $$$ERROR(500)
+    }
 }
 
 ClassMethod DancerDelete() As %Status
 {
     set id = %request.Get("id")
-    set result = ##class(Tables.Dancer).DeleteDancer(id)
-    if $$$ISERR(result) {
-       write result
+    set saveResult = ##class(Tables.Dancer).DeleteDancer(id)
+    set result = {}
+    if $$$ISERR(saveResult) {
+       set result = {"result": false}
     }
     else {
-       write "ok"
+       set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    
+    Return $$$OK
 }
 
 ClassMethod DancerGetOne() As %Status
 {
     set id = %request.Get("id")
     try {
-        set cafe = ##class(Tables.Dancer).GetDancer(id)
+        set dancer = ##class(Tables.Dancer).GetDancer(id)
         set obj = {}
         set obj."name" = cafe.name
 	    set obj."birthday" = cafe.birthday
@@ -94,35 +102,52 @@ ClassMethod CupSave() As %Status
     set obj = {}
     set obj.name = %request.Get("name")
     set obj.lvl = %request.Get("lvl")
-    set result = ##class(Tables.Cup).SaveCup(obj)
-    if $$$ISERR(result) {
-        write result
+    set saveResult = ##class(Tables.Cup).SaveCup(obj)
+
+    set result = {}
+    if $$$ISERR(saveResult) {
+        set result = {"result": false}
     }
     else {
-        write "ok"
+        set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    set ErrorMessage = ##class(%SYSTEM.Status).GetErrorText(saveResult)
+    set result.message = ErrorMessage
+
+    Return $$$OK
 }
 
 ClassMethod CupGetAll() As %Status
 {
-    set obj = ##class(Tables.Cup).%New()
-    do obj.getAll(.arr)
-    write arr.%ToJSON()
-    Return $$$OK
+    Try {
+        set obj = ##class(Tables.Cup).%New()
+        do obj.getAll(.arr)
+        write arr.%ToJSON()
+        Return $$$OK
+    } Catch {
+        set result = {"result": false}
+        set result.message = $ZCVT(exception.Name_" "_exception.Location, "O", "HTML")
+        write result.%ToJSON()
+        Return $$$ERROR(500)
+    }
 }
 
 ClassMethod CupDelete() As %Status
 {
     set id = %request.Get("id")
-    set result = ##class(Tables.Cup).DeleteCup(id)
-    if $$$ISERR(result) {
-       write result
+    set saveResult = ##class(Tables.Cup).DeleteCup(id)
+
+    set result = {}
+    if $$$ISERR(saveResult) {
+       set result = {"result": false}
     }
     else {
-       write "ok"
+       set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    
+    Return $$$OK
 }
 
 ClassMethod CupGetOne() As %Status
@@ -146,14 +171,20 @@ ClassMethod DancerCupAdd() As %Status
     set dancerId = %request.Get("dancer")
     set cupId = %request.Get("cup")
 
-    set result = ##class(Tables.DancerInCup).Save(dancerId, cupId)
-    if $$$ISERR(result) {
-        write result
+    set saveResult = ##class(Tables.DancerInCup).Save(dancerId, cupId)
+
+    set result = {}
+    if $$$ISERR(saveResult) {
+        set result = {"result": false}
     }
     else {
-        write "ok"
+        set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    set ErrorMessage = ##class(%SYSTEM.Status).GetErrorText(saveResult)
+    set result.message = ErrorMessage
+
+    Return $$$OK
 }
 
 ClassMethod JudgeSave() As %Status
@@ -161,22 +192,35 @@ ClassMethod JudgeSave() As %Status
     set obj = {}
     set obj.name = %request.Get("name")
     set obj.status = %request.Get("status")
-    set result = ##class(Tables.Judge).SaveJudge(obj)
-    if $$$ISERR(result) {
-        write result
+    set saveResult = ##class(Tables.Judge).SaveJudge(obj)
+    
+    set result = {}
+    if $$$ISERR(saveResult) {
+        set result = {"result": false}
     }
     else {
-        write "ok"
+        set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    set ErrorMessage = ##class(%SYSTEM.Status).GetErrorText(saveResult)
+    set result.message = ErrorMessage
+
+    return $$$OK
 }
 
 ClassMethod JudgeGetAll() As %Status
 {
-    set obj = ##class(Tables.Judge).%New()
-    do obj.getAll(.arr)
-    write arr.%ToJSON()
-    Return $$$OK
+    Try {
+        set obj = ##class(Tables.Judge).%New()
+        do obj.getAll(.arr)
+        write arr.%ToJSON()
+        Return $$$OK
+    } Catch {
+        set result = {"result": false}
+        set result.message = $ZCVT(exception.Name_" "_exception.Location, "O", "HTML")
+        write result.%ToJSON()
+        Return $$$ERROR(500)
+    }
 }
 
 ClassMethod JudgeCupAdd() As %Status
@@ -184,14 +228,20 @@ ClassMethod JudgeCupAdd() As %Status
     set judgeId = %request.Get("judge")
     set cupId = %request.Get("cup")
 
-    set result = ##class(Tables.JudgeInCup).Save(judgeId, cupId)
-    if $$$ISERR(result) {
-        write result
+    set saveResult = ##class(Tables.JudgeInCup).Save(judgeId, cupId)
+
+    set result = {}
+    if $$$ISERR(saveResult) {
+        set result = {"result": false}
     }
     else {
-        write "ok"
+        set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    set ErrorMessage = ##class(%SYSTEM.Status).GetErrorText(saveResult)
+    set result.message = ErrorMessage
+
+    return $$$OK
 }
 
 ClassMethod AddScore() As %Status
@@ -201,22 +251,35 @@ ClassMethod AddScore() As %Status
     set dancerId = %request.Get("dancer")
     set score = %request.Get("score")
 
-    set result = ##class(Tables.Result).Save(cupId, judgeId, dancerId, score)
-    if $$$ISERR(result) {
-        write result
+    set saveResult = ##class(Tables.Result).Save(cupId, judgeId, dancerId, score)
+
+    set result = {}
+    if $$$ISERR(saveResult) {
+        set result = {"result": false}
     }
     else {
-        write "ok"
+        set result = {"result": true}
     }
-    Return result
+    write result.%ToJSON()
+    set ErrorMessage = ##class(%SYSTEM.Status).GetErrorText(saveResult)
+    set result.message = ErrorMessage
+
+    return $$$OK
 }
 
 ClassMethod GetAllResults() As %Status
 {
-    set obj = ##class(Tables.Result).%New()
-    do obj.getAll(.arr)
-    write arr.%ToJSON()
-    Return $$$OK
+    Try {
+        set obj = ##class(Tables.Result).%New()
+        do obj.getAll(.arr)
+        write arr.%ToJSON()
+        Return $$$OK
+    } Catch {
+        set result = {"result": false}
+        set result.message = $ZCVT(exception.Name_" "_exception.Location, "O", "HTML")
+        write result.%ToJSON()
+        Return $$$ERROR(500)
+    }
 }
 
 }

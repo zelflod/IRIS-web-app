@@ -86,7 +86,7 @@ var ui_template = {
             $$("$sidebar1").toggle();
           }
         },
-        { view: "label", label: "IRIS example web application for test purpose"},
+        { view: "label", label: "IRIS App"},
       ]
     },
     { 

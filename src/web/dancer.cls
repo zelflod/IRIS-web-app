@@ -23,7 +23,6 @@ ClassMethod header() As %Status
   Quit $$$OK
 }
 
-/// mostly JS on webix framework
 ClassMethod body() As %Status
 {
   &JS<
@@ -32,11 +31,11 @@ ClassMethod body() As %Status
     let data = JSON.parse(rawData);
     let message;
     if (data.result) {
-      message = { type:"success", text: "Dancer is saved", expire:-1};
+      message = { type:"success", text: "Dancer is saved", expire: 2000};
       $$('tab2_content').clear();
     }
     else
-      message = { type:"error", text: data.message, expire:-1};
+      message = { type:"error", text: data.message, expire:2000};
     webix.message(message);
   }
 
@@ -57,7 +56,6 @@ var dancer_list_template = {
     height:60
   },
   select:true,  
-  //autoConfig:true,
   url:"/api_cup/dancers/list",
   onClick:{
         "webix_remove_upload":function(ev, id){
@@ -69,17 +67,35 @@ var dancer_list_template = {
     }
   };
 
-// Single dancer form template
+function formatDateNum(num) {
+	if (num > 0 && num < 9) {
+		return '0' + num;
+	}
+	return num;
+}
+
+function formatDate(date) {
+	const d = new Date(date);
+	let m = d.getMonth() + 1;
+	m = formatDateNum(m);
+	const day = formatDateNum(d.getDate());
+
+	return `${day}.${m}.${d.getFullYear()}`;
+}
+
 var dancer_form_template = {
   id:"tab2_content",
   view:"form",
   width: "400",
   elements:[
     {view: "text", name: "name", label: "Name"},
-    {view: "text", name: "birthday", label: "Birthday"},
+    //{view: "text", name: "birthday", label: "Birthday"},
+    {view:"datepicker", name: "birthday", align:"right",label:"Birthday"},
     {view: "text", name: "level", label: "Level"},
     { view:"button",  value:"Submit", id:"btn", click:function(){
       var values = this.getFormView().getValues();
+      values.birthday = formatDate(values.birthday);
+
       webix.ajax().post("/api_cup/dancers/create", values, submitDancer);
     }}
   ]};
@@ -113,7 +129,7 @@ var ui_template = {
             $$("$sidebar1").toggle();
           }
         },
-        { view: "label", label: "IRIS example web application for test purpose"},
+        { view: "label", label: "IRIS App"},
       ]
     },
     { 
@@ -123,12 +139,7 @@ var ui_template = {
         data: menu_data,
         on:{
           onAfterSelect: function(id){
-            //let value = this.getItem(id).value;
-            //webix.message(`Selected ${value}`);
-            //$$("t1_content").setHTML(`Selected ${value}`);
-            //let displayViewId = `${id}_content`;
             $$(`${id}_content`).show();
-            //if (displayViewId === 'tab1_content') $$(displayViewId).refresh();
           }
         }
       },
