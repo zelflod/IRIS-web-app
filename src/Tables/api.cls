@@ -86,9 +86,9 @@ ClassMethod DancerGetOne() As %Status
     try {
         set dancer = ##class(Tables.Dancer).GetDancer(id)
         set obj = {}
-        set obj."name" = cafe.name
-	    set obj."birthday" = cafe.birthday
-        set obj."level" = cafe.level
+        set obj."name" = dancer.name
+	    set obj."birthday" = dancer.birthday
+        set obj."level" = dancer.level
         set source = obj.%ToJSON()
 	    write source
         Return $$$OK
